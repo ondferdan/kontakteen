@@ -403,10 +403,39 @@ window.addEventListener('load', function() {
   document.getElementById('photo-input-gallery').onchange = handlePhotoSelect;
   document.getElementById('photo-input-camera').onchange = handlePhotoSelect;
 
-  // Register service worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/kontakteen/sw.js').catch(function() {});
+  // Register service worker + push notifications
+  var VAPID_PUBLIC = 'BGyCiUWZtqK-yfW42zOMaqvyl2zFIiOCcZ2LS8i5vLEdEOBEn6iTEUNeuCS457xg1bIaTrsXmU4KFv5xliKUl2g';
+
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/kontakteen/sw.js').then(function(reg) {
+      window._swReg = reg;
+      // Ask for permission and subscribe
+      return Notification.requestPermission().then(function(perm) {
+        if (perm !== 'granted') return;
+        return reg.pushManager.getSubscription().then(function(sub) {
+          if (sub) { saveSub(sub); return sub; }
+          return reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlB64ToUint8(VAPID_PUBLIC)
+          }).then(function(sub) { saveSub(sub); return sub; });
+        });
+      });
+    }).catch(function(e) { console.log('SW error:', e); });
   }
+
+  function urlB64ToUint8(b64) {
+    var pad = '='.repeat((4 - b64.length % 4) % 4);
+    var raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(raw.split('').map(function(c) { return c.charCodeAt(0); }));
+  }
+
+  function saveSub(sub) {
+    if (!currentUser || !window._fb) return;
+    var key = currentUser.uid.replace(/[^a-zA-Z0-9]/g, '_');
+    window._fb.set('subscriptions/' + key, JSON.parse(JSON.stringify(sub)));
+  }
+
+  window._saveSub = saveSub;
 
   // Wait for Firebase
   if (window._fbReady) { loadUsers(); }
@@ -530,6 +559,7 @@ function enterChat() {
   updateHeaderAvatars();
   renderPanelMembers();
   loadMessages();
+  listenPushQueue();
 }
 
 function updateHeaderAvatars() {
@@ -670,6 +700,7 @@ function sendMsg() {
   document.getElementById('emoji-picker').classList.remove('open');
   if (pendingPhoto) { doSendPhoto(); return; }
   window._fb.push('messages', { senderUid:currentUser.uid, senderName:currentUser.name, type:'text', text:text, ts:Date.now() })
+    .then(function() { sendPushToOthers(currentUser.name + ': ' + text); })
     .catch(function(e) { showToast('❌ '+e.message); });
 }
 
@@ -706,6 +737,43 @@ function logout() {
   document.getElementById('welcome-screen').classList.add('active');
   document.getElementById('messages-area').innerHTML='<div class="empty-chat"><span>💬</span>Zatím žádné zprávy</div>';
   clearPhoto(); loadUsers();
+}
+
+function sendPushToOthers(body) {
+  // Get all subscriptions from DB and send push via Web Push API
+  // Since we can't do server-side push from browser directly,
+  // we store a 'pending_push' node that other clients check
+  if (!window._fb || !currentUser) return;
+  window._fb.push('push_queue', {
+    from: currentUser.uid,
+    fromName: currentUser.name,
+    body: body,
+    ts: Date.now()
+  }).catch(function() {});
+}
+
+// Listen for push queue and send browser notifications to this device
+function listenPushQueue() {
+  if (!window._fb) return;
+  var lastTs = Date.now();
+  window._fb.on('push_queue', function(snap) {
+    var data = snap.val();
+    if (!data) return;
+    var items = Object.values(data).filter(function(item) {
+      return item.ts > lastTs && item.from !== currentUser.uid;
+    });
+    items.forEach(function(item) {
+      lastTs = Math.max(lastTs, item.ts);
+      if (Notification.permission === 'granted' && document.hidden) {
+        new Notification('💬 ' + item.fromName, {
+          body: item.body,
+          icon: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f46a.png',
+          tag: 'kontakteen',
+          renotify: true
+        });
+      }
+    });
+  });
 }
 
 function showToast(msg) {
