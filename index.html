@@ -12,11 +12,11 @@
     var s = document.createElement('script');
     s.src = url;
     s.onload = cb;
+    s.onerror = function() { console.error('Failed to load: ' + url); };
     document.head.appendChild(s);
   }
   loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', function() {
     loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js', function() {
-    loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js', function() {
       firebase.initializeApp({
         apiKey: "AIzaSyBnOTGHXeSWZvSe_VR1dcX7o82AKQ19iNU",
         authDomain: "kontakteen-6d10a.firebaseapp.com",
@@ -38,8 +38,13 @@
       };
       window._fbReady = true;
       if (window._fbCb) window._fbCb();
-    }); // messaging
-  }); // database
+      // Messaging loads in background - never blocks the app
+      loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js', function() {
+        window._messagingReady = true;
+        if (window._messagingCb) window._messagingCb();
+      });
+    });
+  });
 })();
 </script>
 
