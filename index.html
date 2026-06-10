@@ -409,7 +409,10 @@ window.addEventListener('load', function() {
   var FCM_VAPID = 'U7oLhpRjVvVuiy8KguCsUDt_1rc_juJYcMSlsu9kmxA';
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/kontakteen/sw.js')
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+      regs.forEach(function(reg) { reg.update(); });
+    });
+    navigator.serviceWorker.register('/kontakteen/sw.js?v=3')
       .then(function(reg) { window._swReg = reg; })
       .catch(function(e) { console.warn('SW:', e); });
   }
