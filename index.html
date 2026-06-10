@@ -565,7 +565,9 @@ function showNotifBanner() {
 }
 
 function registerFCM() {
-  if (!window._fbReady || !firebase.messaging) return;
+  if (!window._messagingReady) {
+    window._messagingCb = registerFCM; return;
+  }
   var messaging = firebase.messaging();
   messaging.getToken({ vapidKey: window._FCM_VAPID, serviceWorkerRegistration: window._swReg })
     .then(function(token) {
