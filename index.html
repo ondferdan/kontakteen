@@ -304,7 +304,7 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
     <div class="members-row" id="header-members"></div>
     <div class="header-info">
       <h2>Kontakteen Ferdaan</h2>
-      <p><span class="online-dot"></span>Soukromý prostor</p>
+      <p><span class="online-dot"></span>Soukromý prostor · v4</p>
     </div>
     <button class="btn-menu" onclick="openPanel('members')">👥</button>
   </div>
@@ -415,10 +415,11 @@ window.addEventListener('load', function() {
   var FCM_VAPID = 'U7oLhpRjVvVuiy8KguCsUDt_1rc_juJYcMSlsu9kmxA';
 
   if ('serviceWorker' in navigator) {
+    // Force update check on every load
     navigator.serviceWorker.getRegistrations().then(function(regs) {
       regs.forEach(function(reg) { reg.update(); });
     });
-    navigator.serviceWorker.register('/kontakteen/sw.js?v=3')
+    navigator.serviceWorker.register('/kontakteen/sw.js?v=4')
       .then(function(reg) { window._swReg = reg; })
       .catch(function(e) { console.warn('SW:', e); });
   }
