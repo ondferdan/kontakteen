@@ -335,6 +335,7 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
   <div id="panel-members-list"></div>
   <div class="panel-divider"></div>
   <button id="btn-admin" class="btn-panel-action btn-panel-admin" onclick="openPanel('admin')" style="display:none">⚙️ Správa uživatelů</button>
+  <button class="btn-panel-action" style="color:#3A0CA3" onclick="enableNotifs()">🔔 Zapnout notifikace</button>
   <button class="btn-panel-action btn-panel-logout" onclick="logout()">👋 Odhlásit se</button>
 </div>
 
@@ -570,6 +571,29 @@ function showNotifBanner() {
     localStorage.setItem('kf_notif_asked', '1');
     banner.remove();
   };
+}
+
+function enableNotifs() {
+  closePanel();
+  if (!('Notification' in window)) { showToast('❌ Tvůj prohlížeč notifikace nepodporuje'); return; }
+  if (Notification.permission === 'granted') {
+    registerFCM();
+    showToast('✅ Notifikace jsou zapnuté');
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    showToast('⚠️ Notifikace jsou blokované v nastavení prohlížeče');
+    return;
+  }
+  Notification.requestPermission().then(function(perm) {
+    if (perm === 'granted') {
+      localStorage.setItem('kf_notif_asked', '1');
+      registerFCM();
+      showToast('✅ Notifikace zapnuty!');
+    } else {
+      showToast('Notifikace nebyly povoleny');
+    }
+  });
 }
 
 function registerFCM() {
