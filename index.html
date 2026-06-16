@@ -304,7 +304,7 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
     <div class="members-row" id="header-members"></div>
     <div class="header-info">
       <h2>Kontakteen Ferdaan</h2>
-      <p><span class="online-dot"></span>Soukromý prostor · v4</p>
+      <p><span class="online-dot"></span>Soukromý prostor · v5</p>
     </div>
     <button class="btn-menu" onclick="openPanel('members')">👥</button>
   </div>
@@ -350,6 +350,13 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
 <!-- Two separate inputs: gallery and camera -->
 <input type="file" id="photo-input-gallery" accept="image/*">
 <input type="file" id="photo-input-camera" accept="image/*" capture="environment">
+<!-- Photo lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <a id="lightbox-download" download="kontakteen-foto.jpg" onclick="event.stopPropagation()">⬇ Stáhnout</a>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -419,7 +426,7 @@ window.addEventListener('load', function() {
     navigator.serviceWorker.getRegistrations().then(function(regs) {
       regs.forEach(function(reg) { reg.update(); });
     });
-    navigator.serviceWorker.register('/kontakteen/sw.js?v=4')
+    navigator.serviceWorker.register('/kontakteen/sw.js?v=5')
       .then(function(reg) { window._swReg = reg; })
       .catch(function(e) { console.warn('SW:', e); });
   }
@@ -756,7 +763,7 @@ function mkRow(m) {
     bubble.className = 'bubble photo-bubble ' + (isMe?'me':'them');
     if (isMe) bubble.style.background = color;
     var img = document.createElement('img'); img.src = m.url; img.alt='Fotka';
-    img.onclick = function() { window.open(m.url,'_blank'); };
+    img.onclick = function() { openLightbox(m.url); };
     bubble.appendChild(img);
   } else {
     bubble.className = 'bubble ' + (isMe?'me':'them');
@@ -858,6 +865,17 @@ function listenPushQueue() {
       }
     });
   });
+}
+
+function openLightbox(url) {
+  var lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox-download').href = url;
+  lb.classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
 }
 
 function showToast(msg) {
