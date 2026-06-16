@@ -312,7 +312,7 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
     <div class="members-row" id="header-members"></div>
     <div class="header-info">
       <h2>Kontakteen Ferdaan</h2>
-      <p><span class="online-dot"></span>Soukromý prostor · v7</p>
+      <p><span class="online-dot"></span>Soukromý prostor · v8</p>
     </div>
     <button class="btn-menu" onclick="openPanel('members')">👥</button>
   </div>
@@ -427,14 +427,14 @@ window.addEventListener('load', function() {
 
   // Register service worker + push notifications
   // FCM + Service Worker setup
-  var FCM_VAPID = 'U7oLhpRjVvVuiy8KguCsUDt_1rc_juJYcMSlsu9kmxA';
+  var FCM_VAPID = 'BGhvB-AXuwUQXZe5oMtjvi8igeTddfBRqO6_FnzsqVnYSPRjf3Zy7l5ve8JYUnqRXw9HEbcFyLJf68SW6g-lJfM';
 
   if ('serviceWorker' in navigator) {
     // Force update check on every load
     navigator.serviceWorker.getRegistrations().then(function(regs) {
       regs.forEach(function(reg) { reg.update(); });
     });
-    navigator.serviceWorker.register('/kontakteen/sw.js?v=7')
+    navigator.serviceWorker.register('/kontakteen/sw.js?v=8')
       .then(function(reg) { window._swReg = reg; })
       .catch(function(e) { console.warn('SW:', e); });
   }
