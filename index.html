@@ -312,7 +312,7 @@ html, body { height: 100%; font-family: 'Nunito', sans-serif; background: var(--
     <div class="members-row" id="header-members"></div>
     <div class="header-info">
       <h2>Kontakteen Ferdaan</h2>
-      <p><span class="online-dot"></span>Soukromý prostor · v6</p>
+      <p><span class="online-dot"></span>Soukromý prostor · v7</p>
     </div>
     <button class="btn-menu" onclick="openPanel('members')">👥</button>
   </div>
@@ -434,7 +434,7 @@ window.addEventListener('load', function() {
     navigator.serviceWorker.getRegistrations().then(function(regs) {
       regs.forEach(function(reg) { reg.update(); });
     });
-    navigator.serviceWorker.register('/kontakteen/sw.js?v=6')
+    navigator.serviceWorker.register('/kontakteen/sw.js?v=7')
       .then(function(reg) { window._swReg = reg; })
       .catch(function(e) { console.warn('SW:', e); });
   }
@@ -616,19 +616,26 @@ function registerFCM() {
   if (!window._messagingReady) {
     window._messagingCb = registerFCM; return;
   }
+  if (!window._swReg) {
+    showToast('⏳ Service worker se načítá, zkus za chvíli');
+    setTimeout(registerFCM, 2000);
+    return;
+  }
   var messaging = firebase.messaging();
   messaging.getToken({ vapidKey: window._FCM_VAPID, serviceWorkerRegistration: window._swReg })
     .then(function(token) {
-      if (!token || !currentUser) return;
-      window._fb.set('users/' + currentUser.uid + '/fcmToken', token);
-      // Refresh token handler
+      if (!token) { showToast('❌ Token se nezískal'); return; }
+      if (!currentUser) { showToast('❌ Nejsi přihlášen'); return; }
+      window._fb.set('users/' + currentUser.uid + '/fcmToken', token)
+        .then(function() { showToast('✅ Notifikace aktivní!'); })
+        .catch(function(e) { showToast('❌ Zápis tokenu: ' + e.message); });
       messaging.onTokenRefresh(function() {
         messaging.getToken({ vapidKey: window._FCM_VAPID }).then(function(t) {
           if (t) window._fb.set('users/' + currentUser.uid + '/fcmToken', t);
         });
       });
     })
-    .catch(function(e) { console.warn('FCM token error:', e.message); });
+    .catch(function(e) { showToast('❌ FCM: ' + e.message); });
 }
 
 // ── document.title unread badge ──────────────────────────────────────────────
