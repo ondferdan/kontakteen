@@ -127,7 +127,7 @@ function menu(){
   ov.style.display='flex';
   ov.innerHTML=`<div class="box"><h1>🧺 Lovec jednotek</h1><p>Arkáda na převody délky a hmotnosti</p>
     <div class="chips">${[['len','📏 Délka'],['mass','⚖️ Hmotnost'],['mix','🔀 Obojí']].map(([k,l])=>`<button class="chip ${G.topic===k?'on':''}" data-k="${k}">${l}</button>`).join('')}</div>
-    <div class="how">Nahoře je <b>cíl</b>, třeba <b>1 kg</b>.<br>Chytej košíkem jen to, co se mu rovná (1 000 g, 100 dag…).<br>Chytíš špatnou hodnotu → přijdeš o ❤️.<br>Táhni prstem nebo použij šipky ← →.</div>
+    <div class="how">Nahoře je <b>cíl</b>, třeba <b>1 kg</b>.<br>Chytej košíkem jen to, co se mu rovná (1 000 g, 100 dag…).<br>Chytíš špatnou hodnotu → přijdeš o&nbsp;❤️.<br>Táhni prstem nebo použij šipky ← →.</div>
     ${G.best?`<p>Rekord: <b>${G.best}</b> bodů</p>`:''}
     <button class="btn" id="st">Hrát ▶</button>
     <button class="btn ghost" id="snd">${G.sound?'🔊 Zvuk zapnutý':'🔇 Zvuk vypnutý'}</button>
