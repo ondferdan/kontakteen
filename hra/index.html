@@ -74,7 +74,11 @@ addEventListener('resize',resize);resize();
 
 const G={state:'menu',topic:'mix',score:0,lives:3,level:1,combo:0,caught:0,items:[],parts:[],floats:[],t:0,spawnT:0,
   target:null,good:[],bad:[],basket:{x:0,w:120},keys:{},sound:true,best:0};
-try{G.best=+localStorage.getItem('lovec-best')||0;G.topic=localStorage.getItem('lovec-topic')||'mix';}catch(e){}
+G.spd=1;
+try{G.best=+localStorage.getItem('lovec-best')||0;G.topic=localStorage.getItem('lovec-topic')||'mix';G.spd=+localStorage.getItem('lovec-spd')||1;}catch(e){}
+const SPEEDS=[[0.55,'🐢 Pomalu'],[1,'🚶 Normálně'],[1.4,'🚀 Rychle']];
+function spdHTML(){return `<p style="margin:12px 0 0;font-weight:800;color:#1E2A3A">Rychlost padání</p><div class="chips" style="margin-top:6px">${SPEEDS.map(([v,l])=>`<button class="chip ${G.spd===v?'on':''}" data-s="${v}">${l}</button>`).join('')}</div>`;}
+function bindSpd(again){ov.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const v=+b.dataset.s,r=v/G.spd;G.spd=v;for(const it of G.items)it.vy*=r;try{localStorage.setItem('lovec-spd',v);}catch(e){}again();});}
 
 function newTarget(){
   const lvl=G.level;let dim,v,good,bad,label,g=0;
@@ -93,8 +97,8 @@ function newTarget(){
   const t=document.getElementById('target');t.classList.add('pop');setTimeout(()=>t.classList.remove('pop'),260);
 }
 
-function speed(){return (80+G.level*22)*(H/700+0.35);}
-function spawnEvery(){return Math.max(0.55,1.35-G.level*0.08);}
+function speed(){return (80+G.level*22)*(H/700+0.35)*G.spd;}
+function spawnEvery(){return Math.max(0.55,1.35-G.level*0.08)/Math.sqrt(G.spd);}
 function spawn(){
   const r=Math.random();let txt,kind;
   if(G.lives<3&&r<0.025){txt='❤️';kind='life';}
@@ -128,11 +132,13 @@ function menu(){
   ov.innerHTML=`<div class="box"><h1>🧺 Lovec jednotek</h1><p>Arkáda na převody délky a hmotnosti</p>
     <div class="chips">${[['len','📏 Délka'],['mass','⚖️ Hmotnost'],['mix','🔀 Obojí']].map(([k,l])=>`<button class="chip ${G.topic===k?'on':''}" data-k="${k}">${l}</button>`).join('')}</div>
     <div class="how">Nahoře je <b>cíl</b>, třeba <b>1 kg</b>.<br>Chytej košíkem jen to, co se mu rovná (1 000 g, 100 dag…).<br>Chytíš špatnou hodnotu → přijdeš o&nbsp;❤️.<br>Táhni prstem nebo použij šipky ← →.</div>
+    ${spdHTML()}
     ${G.best?`<p>Rekord: <b>${G.best}</b> bodů</p>`:''}
     <button class="btn" id="st">Hrát ▶</button>
     <button class="btn ghost" id="snd">${G.sound?'🔊 Zvuk zapnutý':'🔇 Zvuk vypnutý'}</button>
     <a class="back" href="../prevody/">← Zpět na procvičování převodů</a></div>`;
   ov.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{G.topic=b.dataset.k;try{localStorage.setItem('lovec-topic',G.topic);}catch(e){}menu();});
+  bindSpd(menu);
   document.getElementById('st').onclick=start;
   document.getElementById('snd').onclick=()=>{G.sound=!G.sound;menu();};
 }
@@ -141,9 +147,9 @@ function start(){
   G.basket.w=Math.min(140,Math.max(100,W*0.28));G.basket.x=W/2;
   ov.style.display='none';newTarget();hud();beep(660,0.12);last=performance.now();
 }
-function pause(){G.state='pause';ov.style.display='flex';ov.innerHTML=`<div class="box"><h1>⏸ Pauza</h1><p>Cíl: <b>${G.target.label}</b> · ${G.score} bodů</p>
+function pause(){G.state='pause';ov.style.display='flex';ov.innerHTML=`<div class="box"><h1>⏸ Pauza</h1><p>Cíl: <b>${G.target.label}</b> · ${G.score} bodů</p>${spdHTML()}
   <button class="btn" id="rs">Pokračovat ▶</button><button class="btn ghost" id="qm">Konec hry</button></div>`;
-  document.getElementById('rs').onclick=resume;document.getElementById('qm').onclick=menu;}
+  bindSpd(pause);document.getElementById('rs').onclick=resume;document.getElementById('qm').onclick=menu;}
 function resume(){G.state='play';ov.style.display='none';last=performance.now();}
 function gameOver(){
   G.state='over';const rec=G.score>G.best;if(rec){G.best=G.score;try{localStorage.setItem('lovec-best',G.best);}catch(e){}}
