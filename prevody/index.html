@@ -329,6 +329,7 @@ function renderHome(){
   <div class="card"><p class="label">Počet příkladů</p><div class="chips">${chip('count',10,'10')}${chip('count',15,'15')}${chip('count',20,'20')}</div></div>
   <button class="btn" id="go">Začít ▶</button>
   <div class="mt"><button class="btn ghost" id="cheat">💡 Tahák – převodní schody</button></div>
+  <a class="btn blue mt" href="../hra/" style="text-align:center;text-decoration:none">🎮 Hra: Lovec jednotek</a>
   ${getBest()?`<p class="best">Nejlepší výsledek v tomto nastavení: ${getBest()}/${S.count}</p>`:''}`;
   app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const v=b.dataset.v;S[b.dataset.g]=b.dataset.g==='count'?+v:v;saveSet();renderHome();});
   app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const k=b.dataset.t;S.types=S.types.includes(k)?S.types.filter(x=>x!==k):[...S.types,k];saveSet();renderHome();});
