@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Převody jednotek – 5. třída</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF8A3D">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF7EA; --ink:#1E2A3A; --muted:#6B7686; --card:#fff;
+    --blue:#3667E0; --blue-soft:#E6EDFF; --orange:#FF8A3D; --orange-soft:#FFE9DA;
+    --green:#1F9D63; --green-soft:#E1F6EB; --red:#DE4848; --red-soft:#FDE6E6;
+    --line:#EADFCB; --r:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,"Segoe UI",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+  #app{max-width:560px;margin:0 auto;padding:18px 16px 40px;min-height:100vh}
+  h1{font-size:30px;font-weight:900;margin:6px 0 2px;letter-spacing:-.5px}
+  .sub{color:var(--muted);font-weight:700;margin:0 0 18px}
+  .card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:0 2px 0 var(--line),0 8px 24px rgba(30,42,58,.06);margin-bottom:14px}
+  .label{font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+  .label button{font:inherit;font-size:13px;text-transform:none;letter-spacing:0;background:none;border:0;color:var(--blue);font-weight:800;cursor:pointer;padding:0}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chips.grid{display:grid;grid-template-columns:1fr 1fr}
+  .chip{flex:1 1 0;min-width:90px;border:2px solid var(--line);background:#fff;border-radius:14px;padding:11px 8px;font:inherit;font-weight:800;font-size:16px;color:var(--ink);cursor:pointer;text-align:center;line-height:1.2}
+  .chip small{display:block;font-weight:600;font-size:12px;color:var(--muted);margin-top:3px}
+  .chip.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+  .chip.on small{color:var(--blue)}
+  .grid .chip{text-align:left;padding:10px 12px;font-size:15px}
+  .btn{display:block;width:100%;border:0;border-radius:16px;padding:16px;font:inherit;font-weight:900;font-size:19px;cursor:pointer;background:var(--orange);color:#fff;transition:transform .05s}
+  .btn:active{transform:translateY(2px)}
+  .btn:disabled{opacity:.45;cursor:default}
+  .btn.blue{background:var(--blue)}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+  .row{display:flex;gap:10px}
+  .row .btn{flex:1}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .pill{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+  .iconbtn{background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 10px;font:inherit;font-weight:800;font-size:14px;cursor:pointer;color:var(--ink)}
+  .dots{display:flex;gap:4px;margin:0 0 14px}
+  .dot{flex:1;height:8px;border-radius:99px;background:var(--line)}
+  .dot.cur{background:var(--orange)} .dot.ok{background:var(--green)} .dot.bad{background:var(--red)}
+  .qtag{font-weight:800;color:var(--muted);font-size:14px;margin-bottom:6px}
+  .qbox{font-size:28px;font-weight:900;text-align:center;padding:16px 4px 8px;line-height:1.5;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px}
+  .eqline{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}
+  .word{font-size:20px;font-weight:700;line-height:1.5;text-align:left;width:100%;margin-bottom:6px}
+  .qbox input{width:6.2ch;font:inherit;font-size:26px;font-weight:900;text-align:center;border:3px solid var(--blue);border-radius:14px;padding:4px 6px;color:var(--ink);background:var(--blue-soft);outline:none}
+  .qbox input.sm{width:3.6ch}
+  .qbox input:focus{background:#fff}
+  .qbox input.ok{border-color:var(--green);background:var(--green-soft)}
+  .qbox input.bad{border-color:var(--red);background:var(--red-soft)}
+  .slot{display:inline-flex;min-width:52px;height:52px;padding:0 8px;border:3px dashed var(--blue);border-radius:14px;align-items:center;justify-content:center;color:var(--blue)}
+  .slot.ok{border:3px solid var(--green);background:var(--green-soft);color:var(--green)}
+  .slot.bad{border:3px solid var(--red);background:var(--red-soft);color:var(--red)}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .opts.row3{grid-template-columns:repeat(3,1fr)}
+  .opts.many{grid-template-columns:repeat(3,1fr)}
+  .opts button{font:inherit;font-size:21px;font-weight:900;padding:14px 6px;border-radius:16px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;position:relative}
+  .opts.row3 button{font-size:32px;padding:8px 0}
+  .opts button:disabled{cursor:default}
+  .opts button.ok{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+  .opts button.bad{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+  .opts button.pk{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+  .badge{position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center}
+  .warn{color:var(--red);font-weight:800;text-align:center;min-height:22px;margin:6px 0}
+  .fb{border-radius:16px;padding:14px 16px;margin:12px 0;font-size:16px;line-height:1.5;font-weight:600}
+  .fb h3{margin:0 0 4px;font-size:20px;font-weight:900}
+  .fb.ok{background:var(--green-soft)} .fb.ok h3{color:var(--green)}
+  .fb.bad{background:var(--red-soft)} .fb.bad h3{color:var(--red)}
+  .mt{margin-top:12px}
+  .rule{background:var(--orange-soft);border-radius:14px;padding:12px 14px;font-weight:700;line-height:1.45;margin-top:12px}
+  .overlay{position:fixed;inset:0;background:rgba(30,42,58,.45);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+  .sheet{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px 18px 26px}
+  .sheet h2{margin:0;font-weight:900}
+  .tabs{display:flex;gap:8px;margin:10px 0 14px}
+  .stairs{display:flex;flex-direction:column}
+  .step{display:flex;align-items:center;gap:10px;background:var(--blue-soft);border-radius:12px;padding:8px 12px;width:max-content;min-width:150px}
+  .step b{font-size:22px;font-weight:900;color:var(--blue);min-width:44px}
+  .step span{color:var(--muted);font-weight:700;font-size:14px}
+  .arrow{display:flex;gap:14px;font-weight:900;font-size:15px;padding:4px 0 4px 18px}
+  .arrow .dn{color:var(--orange)} .arrow .up{color:var(--blue)}
+  .big{font-size:56px;font-weight:900;text-align:center;line-height:1;margin:6px 0}
+  .stars{font-size:40px;text-align:center;letter-spacing:6px}
+  .msg{text-align:center;font-weight:800;font-size:18px;margin:6px 0 4px}
+  .miss{border-top:2px solid var(--line);padding:10px 0;font-weight:700;line-height:1.45}
+  .miss:first-of-type{border-top:0}
+  .miss .q{font-weight:900}
+  .miss .you{color:var(--red)} .miss .cor{color:var(--green)}
+  .best{text-align:center;color:var(--muted);font-weight:700;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<script>
+/* ===== přesná desetinná aritmetika ===== */
+const P10=e=>10n**BigInt(e);
+function norm(v){let n=v.n,d=v.d;while(d>0&&n%10n===0n){n/=10n;d--;}return {n,d};}
+function num(n,d=0){return norm({n:BigInt(n),d});}
+function shift(v,e){let n=v.n,d=v.d-e;if(d<0){n=n*P10(-d);d=0;}return norm({n,d});}
+function add(a,b){const D=Math.max(a.d,b.d);return norm({n:a.n*P10(D-a.d)+b.n*P10(D-b.d),d:D});}
+function sub(a,b){const D=Math.max(a.d,b.d);return norm({n:a.n*P10(D-a.d)-b.n*P10(D-b.d),d:D});}
+function cmp(a,b){const D=Math.max(a.d,b.d);const x=a.n*P10(D-a.d),y=b.n*P10(D-b.d);return x<y?-1:x>y?1:0;}
+const eq=(a,b)=>cmp(a,b)===0;
+function fmt(v){let s=v.n.toString();while(s.length<=v.d)s='0'+s;let ip=s.slice(0,s.length-v.d),fp=s.slice(s.length-v.d);
+  if(ip.length>=4)ip=ip.replace(/\B(?=(\d{3})+(?!\d))/g,' ');return fp?ip+','+fp:ip;}
+function parse(str){const s=String(str).replace(/[\s ]/g,'').replace('.',',');if(!/^\d+(,\d+)?$/.test(s))return null;
+  const [i,f='']=s.split(',');return norm({n:BigInt(i+f),d:f.length});}
+
+/* ===== jednotky ===== */
+const DIMS={
+  len:{name:'Délka',icon:'📏',pow:{mm:0,cm:1,dm:2,m:3,km:6},ladder:['mm','cm','dm','m','km'],hard:['mm','cm','dm','m','km'],
+    combos:[['m','cm'],['km','m'],['dm','cm'],['cm','mm'],['m','dm'],['m','mm']]},
+  mass:{name:'Hmotnost',icon:'⚖️',pow:{mg:0,g:3,dag:4,kg:6,q:8,t:9},ladder:['g','dag','kg','q','t'],hard:['mg','g','dag','kg','q','t'],
+    combos:[['kg','g'],['kg','dag'],['t','kg'],['q','kg'],['dag','g'],['g','mg'],['t','q']]}
+};
+const FULL={mm:'milimetr',cm:'centimetr',dm:'decimetr',m:'metr',km:'kilometr',mg:'miligram',g:'gram',dag:'dekagram',kg:'kilogram',q:'metrický cent',t:'tuna'};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const mist=k=>k===1?'místo':k<5?'místa':'míst';
+const F=e=>fmt(shift(num(1),e));
+const BL='□';
+function fillBlanks(label,vals){let i=0;return label.replace(/□/g,()=>vals[i++]??BL);}
+
+/* ===== jádro převodu ===== */
+function explainFill(val,A,B,e,ans){
+  if(e>0)return `1 ${A} = ${F(e)} ${B}. Z větší jednotky na menší <b>násobíme</b>: ${fmt(val)} · ${F(e)} = <b>${fmt(ans)} ${B}</b> (čárka o ${e} ${mist(e)} doprava).`;
+  const k=-e;return `1 ${B} = ${F(k)} ${A}. Z menší jednotky na větší <b>dělíme</b>: ${fmt(val)} : ${F(k)} = <b>${fmt(ans)} ${B}</b> (čárka o ${k} ${mist(k)} doleva).`;
+}
+function core(dk,level){
+  const D=DIMS[dk],P=D.pow,lad=level==='hard'?D.hard:D.ladder;let i,j;
+  if(level==='easy'){i=rnd(0,lad.length-2);j=i+1;}
+  else{do{i=rnd(0,lad.length-1);j=rnd(0,lad.length-1);}while(i===j||Math.abs(P[lad[i]]-P[lad[j]])>(level==='hard'?4:6));}
+  let A=lad[i],B=lad[j];if(Math.random()<0.5)[A,B]=[B,A];
+  const e=P[A]-P[B],ae=Math.abs(e),lim=ae<=2?99:ae<=3?30:9;let val,ans;
+  if(level!=='hard'){const L=level==='easy'?Math.min(lim,50):lim;
+    if(e>0){val=num(rnd(1,L));ans=shift(val,e);}else{ans=num(rnd(1,L));val=shift(ans,ae);}}
+  else{
+    if(e>0){const d=rnd(1,Math.min(2,ae));let m;do{m=rnd(11,d===1?99:999);}while(m%10===0);val=norm({n:BigInt(m),d});ans=shift(val,e);}
+    else{const mx=Math.min(9999,10**ae*10-1);let m;do{m=rnd(2,mx);}while(m%(10**ae)===0);val=num(m);ans=shift(val,e);}
+  }
+  return {A,B,e,val,ans,left:`${fmt(val)} ${A}`,explain:explainFill(val,A,B,e,ans)};
+}
+function comboPair(dk,level){const D=DIMS[dk],P=D.pow;let c;
+  do{c=pick(D.combos);}while((level==='easy'&&P[c[0]]-P[c[1]]>2)||(level!=='hard'&&c[1]==='mg'));
+  return c;}
+
+/* ===== typy úloh ===== */
+const TYPES=[
+  {k:'fill',  l:'✏️ Doplň číslo', s:'250 cm = ? m'},
+  {k:'choice',l:'🔘 Vyber výsledek', s:'ze 4 možností'},
+  {k:'unit',  l:'📐 Doplň jednotku', s:'450 cm = 4,5 ?'},
+  {k:'tf',    l:'✅ Pravda/nepravda', s:'1 t = 100 kg?'},
+  {k:'cmp',   l:'⚖ Porovnej', s:'3 kg ? 2 900 g'},
+  {k:'split', l:'🧩 Rozlož', s:'325 cm = ? m ? cm'},
+  {k:'sum',   l:'➕ Sčítej a odčítej', s:'2 m + 35 cm'},
+  {k:'order', l:'🔢 Seřaď', s:'od nejmenšího'},
+  {k:'word',  l:'📖 Slovní úlohy', s:'příklady ze života'},
+  {k:'real',  l:'🤔 Odhadni', s:'kolik váží jablko?'}
+];
+const TAG={fill:'Doplň číslo',choice:'Vyber správný výsledek',unit:'Doplň správnou jednotku',tf:'Platí to?',cmp:'Porovnej: větší, menší, nebo stejné?',
+  split:'Rozlož na dvě jednotky',sum:'Vypočítej',order:'Seřaď od nejmenšího po největší (ťukej postupně)',word:'Slovní úloha',real:'Odhadni, co odpovídá skutečnosti'};
+
+function inputQ(o){return Object.assign({kind:'input'},o);}
+function optsQ(o){return Object.assign({kind:'opts'},o);}
+
+function gFill(dk,lv){
+  if(lv!=='easy'&&Math.random()<(lv==='hard'?0.35:0.2)){
+    const [Bg,Sm]=comboPair(dk,lv),P=DIMS[dk].pow,e=P[Bg]-P[Sm],f=10**e;
+    const a=rnd(1,9),b=f>=100&&Math.random()<0.5?rnd(1,f/10-1)*10:rnd(1,f-1);
+    const A=num(a),B=num(b),inSm=shift(A,e),tot=add(inSm,B),left=`${a} ${Bg} ${b} ${Sm}`;
+    if(lv==='medium'||Math.random()<0.6)
+      return inputQ({type:'fill',dim:dk,html:`<span>${left}</span><span class="eqline">= {{0}} ${Sm}</span>`,ans:[tot],label:`${left} = □ ${Sm}`,
+        explain:`${a} ${Bg} = ${fmt(inSm)} ${Sm}. Přičteme zbytek: ${fmt(inSm)} + ${b} = <b>${fmt(tot)} ${Sm}</b>.`});
+    const bB=shift(B,-e),r=add(A,bB);
+    return inputQ({type:'fill',dim:dk,html:`<span>${left}</span><span class="eqline">= {{0}} ${Bg}</span>`,ans:[r],label:`${left} = □ ${Bg}`,
+      explain:`${b} ${Sm} = ${fmt(bB)} ${Bg} (1 ${Bg} = ${F(e)} ${Sm}, dělíme). Pak ${a} + ${fmt(bB)} = <b>${fmt(r)} ${Bg}</b>.`});
+  }
+  const c=core(dk,lv);
+  return inputQ({type:'fill',dim:dk,html:`<span>${c.left}</span><span class="eqline">= {{0}} ${c.B}</span>`,ans:[c.ans],label:`${c.left} = □ ${c.B}`,explain:c.explain});
+}
+function wrongs(ans){return shuffle([1,-1,2,-2].map(k=>shift(ans,k)));}
+function gChoice(dk,lv){
+  const c=core(dk,lv),seen=new Set([fmt(c.ans)]),opts=[c.ans];
+  for(const w of wrongs(c.ans)){if(opts.length>=4)break;if(!seen.has(fmt(w))){seen.add(fmt(w));opts.push(w);}}
+  const labels=shuffle(opts.map(v=>`${fmt(v)} ${c.B}`));
+  return optsQ({type:'choice',dim:dk,html:`<span>${c.left} =</span><span class="slot" id="slot">?</span>`,opts:labels,correct:`${fmt(c.ans)} ${c.B}`,
+    label:`${c.left} = □`,explain:c.explain});
+}
+function gUnit(dk,lv){
+  const c=core(dk,lv),D=DIMS[dk],units=lv==='hard'?D.hard:D.ladder;
+  return optsQ({type:'unit',dim:dk,cls:'many',html:`<span>${c.left}</span><span class="eqline">= ${fmt(c.ans)} <span class="slot" id="slot">?</span></span>`,
+    opts:units.slice(),correct:c.B,label:`${c.left} = ${fmt(c.ans)} □`,explain:c.explain});
+}
+function gTf(dk,lv){
+  const c=core(dk,lv),truth=Math.random()<0.5,shown=truth?c.ans:shift(c.ans,pick([1,-1]));
+  const st=`${c.left} = ${fmt(shown)} ${c.B}`;
+  return optsQ({type:'tf',dim:dk,html:`<span>${st}</span>`,opts:['✅ Pravda','❌ Nepravda'],correct:truth?'✅ Pravda':'❌ Nepravda',
+    label:`${st} → □`,explain:(truth?'Platí. ':`Neplatí – správně je ${fmt(c.ans)} ${c.B}. `)+c.explain});
+}
+function gCmp(dk,lv){
+  const D=DIMS[dk],P=D.pow,lad=lv==='hard'?D.hard:D.ladder;let i,j;
+  if(lv==='easy'){i=rnd(0,lad.length-2);j=i+1;}
+  else{do{i=rnd(0,lad.length-1);j=rnd(0,lad.length-1);}while(i===j||Math.abs(P[lad[i]]-P[lad[j]])>3);}
+  let big=lad[i],sm=lad[j];if(P[big]<P[sm])[big,sm]=[sm,big];
+  const e=P[big]-P[sm];
+  const k=lv==='hard'&&Math.random()<0.6?norm({n:BigInt(rnd(11,99)),d:1}):num(rnd(1,lv==='easy'?20:12));
+  const q=shift(k,e);let r;const roll=Math.random();
+  if(roll<0.33)r=q;
+  else if(lv!=='easy'&&roll<0.6&&e>=2)r=shift(k,e-1);
+  else{const dl=num(rnd(1,9)*Math.max(1,10**(e-1)));r=(Math.random()<0.5&&cmp(q,dl)>0)?sub(q,dl):add(q,dl);}
+  let L={v:k,u:big},R={v:r,u:sm};const c=cmp(q,r);let sym=c<0?'<':c>0?'>':'=';let sw=false;
+  if(Math.random()<0.5){[L,R]=[R,L];sw=true;sym=sym==='<'?'>':sym==='>'?'<':'=';}
+  const lt=`${fmt(L.v)} ${L.u}`,rt=`${fmt(R.v)} ${R.u}`,qS=`${fmt(q)} ${sm}`,rS=`${fmt(r)} ${sm}`;
+  return optsQ({type:'cmp',dim:dk,cls:'row3',html:`<span>${lt}</span><span class="slot" id="slot">?</span><span>${rt}</span>`,opts:['<','=','>'],correct:sym,
+    label:`${lt} □ ${rt}`,explain:`Převedeme na stejnou jednotku: ${fmt(k)} ${big} = ${qS}. Porovnáme ${sw?rS+' a '+qS:qS+' a '+rS} → <b>${lt} ${sym} ${rt}</b>.`});
+}
+function gSplit(dk,lv){
+  const [Bg,Sm]=comboPair(dk,lv),P=DIMS[dk].pow,e=P[Bg]-P[Sm],f=10**e;
+  const a=rnd(1,lv==='hard'?25:9),b=rnd(1,f-1),tot=num(a*f+b);
+  return inputQ({type:'split',dim:dk,html:`<span>${fmt(tot)} ${Sm}</span><span class="eqline">= {{0}} ${Bg}</span><span class="eqline">{{1}} ${Sm}</span>`,
+    ans:[num(a),num(b)],small:true,label:`${fmt(tot)} ${Sm} = □ ${Bg} □ ${Sm}`,
+    explain:`1 ${Bg} = ${F(e)} ${Sm}. V ${fmt(tot)} ${Sm} se ${F(e)} vejde <b>${a}×</b> (= ${fmt(num(a*f))} ${Sm}) a zbude <b>${b} ${Sm}</b>.`});
+}
+function gSum(dk,lv){
+  const [Bg,Sm]=comboPair(dk,lv),P=DIMS[dk].pow,e=P[Bg]-P[Sm],f=10**e;
+  const a=rnd(1,9),minus=Math.random()<0.45;let b=f>=100?rnd(1,Math.min(f-1,99))*(f>=1000?5:1):rnd(1,f-1);
+  if(minus&&b>=a*f)b=rnd(1,a*f-1);
+  const aS=a*f,res=num(minus?aS-b:aS+b),op=minus?'−':'+';
+  const inBig=lv==='hard'&&Math.random()<0.4,out=inBig?shift(res,-e):res,outU=inBig?Bg:Sm;
+  const expr=`${a} ${Bg} ${op} ${b} ${Sm}`;
+  return inputQ({type:'sum',dim:dk,html:`<span>${expr}</span><span class="eqline">= {{0}} ${outU}</span>`,ans:[out],label:`${expr} = □ ${outU}`,
+    explain:`Nejdřív stejné jednotky: ${a} ${Bg} = ${fmt(num(aS))} ${Sm}. Pak ${fmt(num(aS))} ${op} ${b} = ${fmt(res)} ${Sm}`+(inBig?` = <b>${fmt(out)} ${Bg}</b>.`:` → <b>${fmt(out)} ${Sm}</b>.`)});
+}
+function gOrder(dk,lv){
+  const D=DIMS[dk],P=D.pow,lad=lv==='hard'?D.hard:D.ladder;let i,j;
+  do{i=rnd(0,lad.length-2);j=lv==='easy'?i+1:i+rnd(1,2);}while(j>=lad.length||P[lad[j]]-P[lad[i]]>3);
+  const sm=lad[i],big=lad[j],e=P[big]-P[sm],f=10**e,step=Math.max(1,f/10);const used=new Set(),items=[];
+  const put=(q,inBig)=>{if(used.has(q)||q<=0)return false;used.add(q);const v=num(q);items.push({q,label:inBig?`${fmt(shift(v,-e))} ${big}`:`${fmt(v)} ${sm}`});return true;};
+  while(!put(f*rnd(1,5),true));
+  while(!put(step*rnd(5,50),false));
+  let g=0;while(items.length<4&&g++<200){const q=step*rnd(5,50);put(q,q%f===0?Math.random()<0.6:(lv!=='easy'&&Math.random()<0.5));}
+  const list=shuffle(items),sorted=list.slice().sort((x,y)=>x.q-y.q);
+  return {kind:'order',type:'order',dim:dk,items:list,correctOrder:sorted.map(x=>list.indexOf(x)),
+    label:'Seřaď: '+list.map(x=>x.label).join(', '),correct:sorted.map(x=>x.label).join(' < '),
+    explain:'Vše převedeme na '+sm+': '+sorted.map(x=>`${x.label} = ${fmt(num(x.q))} ${sm}`).join('; ')+'.'};
+}
+/* slovní úlohy */
+const WORD={len:[
+  ()=>{const a=rnd(1,5),b=rnd(1,19)*50;return{t:`Ondra uběhl na tréninku ${a} km a ještě ${b} m. Kolik metrů uběhl celkem?`,u:'m',ans:num(a*1000+b),x:`${a} km = ${fmt(num(a*1000))} m, ${fmt(num(a*1000))} + ${b} = <b>${fmt(num(a*1000+b))} m</b>.`};},
+  ()=>{const a=rnd(2,5),b=rnd(3,15)*10;return{t:`Stuha měřila ${a} m. Maminka z ní ustřihla ${b} cm. Kolik centimetrů stuhy zbylo?`,u:'cm',ans:num(a*100-b),x:`${a} m = ${a*100} cm, ${a*100} − ${b} = <b>${a*100-b} cm</b>.`};},
+  ()=>{const n=rnd(4,12),d=rnd(2,9),t=n*d;return{t:`Plot má ${n} stejných dílů. Každý díl je široký ${d} dm. Kolik metrů měří celý plot?`,u:'m',ans:shift(num(t),-1),x:`${n} · ${d} = ${t} dm. 10 dm = 1 m, takže ${t} : 10 = <b>${fmt(shift(num(t),-1))} m</b>.`};},
+  ()=>{const x=rnd(4,18)*50,t=2*x;return{t:`Cesta do školy měří ${fmt(num(x))} m. Kolik kilometrů ujde Eliška za den, když jde do školy a zase domů?`,u:'km',ans:shift(num(t),-3),x:`Tam i zpět: 2 · ${fmt(num(x))} = ${fmt(num(t))} m. 1 km = 1 000 m → ${fmt(num(t))} : 1 000 = <b>${fmt(shift(num(t),-3))} km</b>.`};},
+  ()=>{const a=rnd(8,17),b=rnd(1,9);return{t:`Pastelka měří ${a} cm a ${b} mm. Kolik je to milimetrů?`,u:'mm',ans:num(a*10+b),x:`${a} cm = ${a*10} mm, ${a*10} + ${b} = <b>${a*10+b} mm</b>.`};},
+  ()=>{const s=rnd(5,7)*10,n=rnd(2,10)*10,t=s*n;return{t:`Jeden Honzův krok měří ${s} cm. Kolik metrů ujde za ${n} kroků?`,u:'m',ans:shift(num(t),-2),x:`${n} · ${s} = ${fmt(num(t))} cm. 1 m = 100 cm → <b>${fmt(shift(num(t),-2))} m</b>.`};},
+  ()=>{const a=rnd(12,25),b=rnd(3,9)*10;return{t:`Školní chodba je dlouhá ${a} m. Koberec v ní měří o ${b} dm méně. Kolik decimetrů měří koberec?`,u:'dm',ans:num(a*10-b),x:`${a} m = ${a*10} dm, ${a*10} − ${b} = <b>${a*10-b} dm</b>.`};}
+],mass:[
+  ()=>{const a=rnd(1,3),b=rnd(1,9)*10;return{t:`Babička koupila ${a} kg mouky a ${b} dag cukru. Kolik dekagramů nese celkem?`,u:'dag',ans:num(a*100+b),x:`${a} kg = ${a*100} dag, ${a*100} + ${b} = <b>${a*100+b} dag</b>.`};},
+  ()=>{const n=rnd(2,8),g=pick([125,250,200,500]),t=n*g;return{t:`V tašce jsou balíčky másla, každý váží ${g} g. Balíčků je ${n}. Kolik kilogramů váží všechno máslo?`,u:'kg',ans:shift(num(t),-3),x:`${n} · ${g} = ${fmt(num(t))} g. 1 kg = 1 000 g → <b>${fmt(shift(num(t),-3))} kg</b>.`};},
+  ()=>{const t=rnd(2,9),k=rnd(1,9)*100+rnd(0,9)*10;return{t:`Nákladní auto vezlo ${t} t písku. Na stavbě vyložilo ${k} kg. Kolik kilogramů písku zůstalo na autě?`,u:'kg',ans:num(t*1000-k),x:`${t} t = ${fmt(num(t*1000))} kg, ${fmt(num(t*1000))} − ${k} = <b>${fmt(num(t*1000-k))} kg</b>.`};},
+  ()=>{const d=rnd(5,20),n=rnd(2,6);return{t:`Sáček bonbonů váží ${d} dag. Sáčků je ${n}. Kolik gramů váží všechny dohromady?`,u:'g',ans:num(n*d*10),x:`${n} · ${d} = ${n*d} dag. 1 dag = 10 g → <b>${n*d*10} g</b>.`};},
+  ()=>{const k=pick([25,50]),n=k===25?4*rnd(1,4):2*rnd(1,5);return{t:`Pytel brambor váží ${k} kg. Pytlů je ve sklepě ${n}. Kolik metrických centů váží všechny brambory?`,u:'q',ans:num(n*k/100),x:`${n} · ${k} = ${n*k} kg. 1 q = 100 kg → <b>${n*k/100} q</b>.`};},
+  ()=>{const a=rnd(2,5),g=rnd(1,19)*50;return{t:`Meloun váží ${a} kg ${g} g. Kolik je to gramů?`,u:'g',ans:num(a*1000+g),x:`${a} kg = ${fmt(num(a*1000))} g, + ${g} g = <b>${fmt(num(a*1000+g))} g</b>.`};},
+  ()=>{const p=rnd(2,6),s=rnd(15,40);return{t:`Pejsek vážil ${p} kg. Za měsíc přibral ${s} dag. Kolik dekagramů váží teď?`,u:'dag',ans:num(p*100+s),x:`${p} kg = ${p*100} dag, ${p*100} + ${s} = <b>${p*100+s} dag</b>.`};}
+]};
+function gWord(dk){const w=pick(WORD[dk])();
+  return inputQ({type:'word',dim:dk,html:`<div class="word">${w.t}</div><span class="eqline">{{0}} ${w.u}</span>`,ans:[w.ans],label:`${w.t} → □ ${w.u}`,explain:w.x});}
+/* odhady */
+const REAL={len:[
+  ['Kolik asi měří dveře do třídy (výška)?','2','m',['cm','dm','km']],['Jak dlouhá je nová pastelka?','18','cm',['mm','m','km']],
+  ['Jak tlustý je sešit?','5','mm',['dm','m','km']],['Jak vysoký je žák 5. třídy?','145','cm',['mm','dm','m']],
+  ['Jak daleko je to z Třebíče do Brna?','60','km',['cm','dm','m']],['Jak dlouhé je fotbalové hřiště?','100','m',['cm','dm','km']],
+  ['Jak dlouhý je mravenec?','6','mm',['dm','m','km']],['Jak dlouhá je školní lavice?','12','dm',['mm','cm','m']],
+  ['Jak vysoký je panelák?','30','m',['cm','dm','km']],['Jak široký je palec u ruky?','2','cm',['mm','m','km']]
+],mass:[
+  ['Kolik asi váží jablko?','20','dag',['g','kg','t']],['Kolik váží tabulka čokolády?','100','g',['kg','q','t']],
+  ['Kolik váží žák 5. třídy?','35','kg',['g','dag','t']],['Kolik váží osobní auto?','1','t',['g','dag','kg']],
+  ['Kolik váží slon?','5','t',['g','dag','kg']],['Kolik váží slepičí vejce?','6','dag',['g','kg','q']],
+  ['Kolik váží pytel cementu?','25','kg',['g','dag','t']],['Kolik váží malé kotě?','50','dag',['g','kg','q']],
+  ['Kolik váží kráva?','6','q',['g','dag','kg']],['Kolik váží jedno zrnko rýže?','20','mg',['g','dag','kg']]
+]};
+function gReal(dk){const [t,n,u,d]=pick(REAL[dk]);const opts=shuffle([u,...d]).map(x=>`${n} ${x}`);
+  return optsQ({type:'real',dim:dk,html:`<div class="word" style="text-align:center">${t}</div>`,opts,correct:`${n} ${u}`,label:`${t} □`,
+    explain:`Odpovídá to <b>${n} ${u}</b> (${FULL[u]}). Ostatní možnosti jsou mnohem menší nebo větší.`});}
+
+const GEN={fill:gFill,choice:gChoice,unit:gUnit,tf:gTf,cmp:gCmp,split:gSplit,sum:gSum,order:gOrder,word:gWord,real:gReal};
+
+/* ===== stav ===== */
+const S={topic:'len',level:'easy',types:TYPES.map(t=>t.k),count:10,qs:[],i:0,score:0,answered:false,res:[],retry:false,pick:[]};
+try{const s=JSON.parse(localStorage.getItem('prevody2')||'{}');['topic','level','count'].forEach(k=>{if(s[k])S[k]=s[k];});if(Array.isArray(s.types)&&s.types.length)S.types=s.types.filter(k=>GEN[k]);}catch(e){}
+function saveSet(){try{localStorage.setItem('prevody2',JSON.stringify({topic:S.topic,level:S.level,types:S.types,count:S.count}));}catch(e){}}
+const bestKey=()=>'prevody2-best-'+S.topic+S.level+S.count+S.types.slice().sort().join('');
+function getBest(){try{return +localStorage.getItem(bestKey())||0;}catch(e){return 0;}}
+function setBest(v){try{if(v>getBest())localStorage.setItem(bestKey(),v);}catch(e){}}
+
+function buildSession(){
+  const out=[],seen=new Set();let bag=[],g=0;
+  while(out.length<S.count&&g++<1000){
+    if(!bag.length)bag=shuffle(S.types);
+    const t=bag.pop(),dk=S.topic==='mix'?pick(['len','mass']):S.topic,q=GEN[t](dk,S.level);
+    if(seen.has(q.label)){bag.push(t);continue;}seen.add(q.label);out.push(q);}
+  return out;
+}
+
+const app=document.getElementById('app'),modal=document.getElementById('modal');
+const $=id=>document.getElementById(id);
+const LV={easy:'Lehká',medium:'Střední',hard:'Těžká'};
+
+/* ===== úvod ===== */
+function chip(g,v,l,s){return `<button class="chip ${S[g]==v?'on':''}" data-g="${g}" data-v="${v}">${l}${s?`<small>${s}</small>`:''}</button>`;}
+function renderHome(){
+  const all=S.types.length===TYPES.length;
+  app.innerHTML=`
+  <h1>Převody jednotek 📏⚖️</h1>
+  <p class="sub">Procvičování pro 5. třídu – délka a hmotnost</p>
+  <div class="card"><p class="label">Co procvičujeme</p><div class="chips">
+    ${chip('topic','len','📏 Délka','mm, cm, dm, m, km')}${chip('topic','mass','⚖️ Hmotnost','g, dag, kg, q, t')}${chip('topic','mix','🔀 Obojí','')}</div></div>
+  <div class="card"><p class="label">Obtížnost</p><div class="chips">
+    ${chip('level','easy','Lehká','sousední jednotky')}${chip('level','medium','Střední','přes více jednotek')}${chip('level','hard','Těžká','desetinná čísla, mg')}</div></div>
+  <div class="card"><p class="label">Druhy příkladů <button id="allT">${all?'Zrušit vše':'Vybrat vše'}</button></p><div class="chips grid">
+    ${TYPES.map(t=>`<button class="chip ${S.types.includes(t.k)?'on':''}" data-t="${t.k}">${t.l}<small>${t.s}</small></button>`).join('')}</div>
+    <div class="warn" id="tw"></div></div>
+  <div class="card"><p class="label">Počet příkladů</p><div class="chips">${chip('count',10,'10')}${chip('count',15,'15')}${chip('count',20,'20')}</div></div>
+  <button class="btn" id="go">Začít ▶</button>
+  <div class="mt"><button class="btn ghost" id="cheat">💡 Tahák – převodní schody</button></div>
+  ${getBest()?`<p class="best">Nejlepší výsledek v tomto nastavení: ${getBest()}/${S.count}</p>`:''}`;
+  app.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const v=b.dataset.v;S[b.dataset.g]=b.dataset.g==='count'?+v:v;saveSet();renderHome();});
+  app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{const k=b.dataset.t;S.types=S.types.includes(k)?S.types.filter(x=>x!==k):[...S.types,k];saveSet();renderHome();});
+  $('allT').onclick=()=>{S.types=all?[]:TYPES.map(t=>t.k);saveSet();renderHome();};
+  $('go').onclick=()=>{if(!S.types.length){$('tw').textContent='Vyber aspoň jeden druh příkladů.';return;}startSession(buildSession(),false);};
+  $('cheat').onclick=()=>openCheat(S.topic==='mass'?'mass':'len');
+}
+
+/* ===== příklad ===== */
+function startSession(qs,retry){S.qs=qs;S.i=0;S.score=0;S.res=[];S.retry=retry;renderQ();window.scrollTo(0,0);}
+function dotsHTML(){return `<div class="dots">${S.qs.map((_,k)=>{const r=S.res[k];return `<div class="dot ${r?(r.ok?'ok':'bad'):(k===S.i?'cur':'')}"></div>`;}).join('')}</div>`;}
+function pillText(){return `${S.retry?'Oprava · ':''}${S.i+1}/${S.qs.length} · ⭐ ${S.score}`;}
+function renderQ(){
+  const q=S.qs[S.i];S.answered=false;S.pick=[];let body='';
+  const tag=`<div class="qtag">${DIMS[q.dim].icon} ${TAG[q.type]}</div>`;
+  if(q.kind==='input'){
+    const h=q.html.replace(/\{\{(\d)\}\}/g,(_,i)=>`<input id="in${i}" class="${q.small?'sm':''}" inputmode="decimal" autocomplete="off" aria-label="odpověď">`);
+    body=`${tag}<div class="qbox">${h}</div><div class="warn" id="warn"></div><button class="btn blue" id="check">Zkontrolovat</button>`;
+  }else if(q.kind==='opts'){
+    body=`${tag}<div class="qbox">${q.html}</div><div class="opts ${q.cls||''}">${q.opts.map((o,i)=>`<button data-o="${i}">${o}</button>`).join('')}</div>`;
+  }else{
+    body=`${tag}<div class="opts" id="ord">${q.items.map((it,i)=>`<button data-i="${i}">${it.label}</button>`).join('')}</div>
+      <div class="row mt"><button class="btn ghost" id="undo">↺ Znovu</button><button class="btn blue" id="check" disabled>Zkontrolovat</button></div>`;
+  }
+  app.innerHTML=`<div class="top"><button class="iconbtn" id="home">✕ Konec</button><span class="pill" id="pill">${pillText()}</span>
+    <button class="iconbtn" id="hint">💡 Tahák</button></div>${dotsHTML()}<div class="card">${body}<div id="fb"></div></div>`;
+  $('home').onclick=renderHome;$('hint').onclick=()=>openCheat(q.dim);
+  if(q.kind==='input'){setTimeout(()=>{const i=$('in0');if(i)i.focus();},50);$('check').onclick=checkInput;}
+  else if(q.kind==='opts')app.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>answerOpt(+b.dataset.o));
+  else{app.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>tapOrder(+b.dataset.i));$('undo').onclick=()=>{S.pick=[];drawOrder();};$('check').onclick=checkOrder;}
+}
+function checkInput(){
+  if(S.answered)return next();
+  const q=S.qs[S.i],ins=q.ans.map((_,i)=>$('in'+i)),vals=ins.map(x=>parse(x.value));
+  const bad=vals.findIndex(v=>!v);
+  if(bad>=0){const t=ins[bad].value.trim();$('warn').textContent=t?'Napiš jen číslo, třeba 2,5':'Doplň všechna políčka 🙂';ins[bad].focus();return;}
+  $('warn').textContent='';let ok=true;
+  ins.forEach((x,i)=>{const g=eq(vals[i],q.ans[i]);ok=ok&&g;x.readOnly=true;x.classList.add(g?'ok':'bad');});
+  finish(ok,fillBlanks(q.label,vals.map(fmt)),fillBlanks(q.label,q.ans.map(fmt)));
+}
+function answerOpt(i){
+  if(S.answered)return;const q=S.qs[S.i],ch=q.opts[i],ok=ch===q.correct;
+  app.querySelectorAll('[data-o]').forEach(b=>{b.disabled=true;const o=q.opts[+b.dataset.o];if(o===q.correct)b.classList.add('ok');else if(+b.dataset.o===i)b.classList.add('bad');});
+  const sl=$('slot');if(sl){sl.textContent=ch;sl.className='slot '+(ok?'ok':'bad');}
+  finish(ok,fillBlanks(q.label,[ch]),fillBlanks(q.label,[q.correct]));
+}
+function tapOrder(i){if(S.answered)return;const k=S.pick.indexOf(i);if(k>=0)S.pick.splice(k,1);else S.pick.push(i);drawOrder();}
+function drawOrder(){
+  app.querySelectorAll('[data-i]').forEach(b=>{const i=+b.dataset.i,k=S.pick.indexOf(i);b.classList.toggle('pk',k>=0);
+    b.innerHTML=(k>=0?`<span class="badge">${k+1}</span>`:'')+S.qs[S.i].items[i].label;});
+  $('check').disabled=S.pick.length!==S.qs[S.i].items.length;
+}
+function checkOrder(){
+  if(S.answered)return next();
+  const q=S.qs[S.i],ok=S.pick.every((v,k)=>v===q.correctOrder[k]);
+  app.querySelectorAll('[data-i]').forEach(b=>{const i=+b.dataset.i;b.disabled=true;b.classList.remove('pk');b.classList.add(S.pick.indexOf(i)===q.correctOrder.indexOf(i)?'ok':'bad');});
+  $('undo').disabled=true;$('check').style.display='none';$('undo').style.display='none';
+  finish(ok,S.pick.map(i=>q.items[i].label).join(' < '),q.correct);
+}
+const PRAISE=['Správně! 🎉','Výborně! ⭐','Paráda! 👏','Přesně tak! ✅','Super! 🚀','Bezva! 💪'];
+function finish(ok,given,correct){
+  S.answered=true;if(ok)S.score++;const q=S.qs[S.i];S.res[S.i]={ok,given,correct,q};
+  const last=S.i===S.qs.length-1;
+  $('fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><h3>${ok?pick(PRAISE):'Ještě ne 🙈'}</h3>${ok?'':`<div>Správně: <b>${correct}</b></div>`}${q.explain}</div>
+    <button class="btn" id="nx">${last?'Výsledky 🏁':'Další ▶'}</button>`;
+  $('nx').onclick=next;$('pill').textContent=pillText();
+  document.querySelector('.dots').outerHTML=dotsHTML();
+  const ae=document.activeElement;if(ae&&ae.tagName==='INPUT')ae.blur();
+  $('nx').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function next(){if(S.i<S.qs.length-1){S.i++;renderQ();}else renderResults();}
+
+/* ===== výsledky ===== */
+function renderResults(){
+  const n=S.qs.length,sc=S.score,p=sc/n,stars=p===1?3:p>=0.8?2:p>=0.6?1:0;
+  const msg=p===1?'Bez chyby! Jsi mistr převodů 🏆':p>=0.8?'Skvělá práce, jen kousek k dokonalosti!':p>=0.6?'Dobrý základ, ještě trochu potrénuj.':'Nevadí – mrkni do taháku a zkus to znovu 💪';
+  if(!S.retry)setBest(sc);
+  const wrong=S.res.filter(r=>!r.ok);
+  app.innerHTML=`<h1>Hotovo! 🏁</h1><p class="sub">${S.retry?'Oprava chyb':`${{len:'Délka',mass:'Hmotnost',mix:'Délka i hmotnost'}[S.topic]} · ${LV[S.level]}`}</p>
+    <div class="card"><div class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div><div class="big">${sc}/${n}</div><div class="msg">${msg}</div>
+    ${!S.retry&&getBest()?`<p class="best">Nejlepší výsledek: ${getBest()}/${n}</p>`:''}</div>
+    ${wrong.length?`<div class="card"><p class="label">Chyby k zopakování</p>${wrong.map(r=>`<div class="miss"><div class="q">${fillBlanks(r.q.label,['?','?'])}</div>
+      <div class="you">✗ tvoje: ${r.given}</div><div class="cor">✓ správně: ${r.correct}</div></div>`).join('')}</div>
+      <button class="btn blue" id="fix">Procvičit chyby (${wrong.length}) 🔁</button><div class="mt"></div>`:''}
+    <div class="row"><button class="btn" id="again">Nové příklady</button><button class="btn ghost" id="set">Nastavení</button></div>`;
+  if(wrong.length)$('fix').onclick=()=>startSession(wrong.map(r=>r.q),true);
+  $('again').onclick=()=>startSession(buildSession(),false);$('set').onclick=renderHome;window.scrollTo(0,0);
+}
+
+/* ===== tahák ===== */
+function stairsHTML(dk){
+  const D=DIMS[dk],lad=D.hard.slice().reverse();let h='';
+  lad.forEach((u,k)=>{h+=`<div class="step" style="margin-left:${k*18}px"><b>${u}</b><span>${FULL[u]}</span></div>`;
+    if(k<lad.length-1){const e=D.pow[u]-D.pow[lad[k+1]];h+=`<div class="arrow" style="margin-left:${k*18}px"><span class="dn">↓ · ${F(e)}</span><span class="up">↑ : ${F(e)}</span></div>`;}});
+  const facts=dk==='len'?'1 km = 1 000 m · 1 m = 10 dm = 100 cm = 1 000 mm · 1 dm = 10 cm · 1 cm = 10 mm'
+    :'1 t = 10 q = 1 000 kg · 1 q = 100 kg · 1 kg = 100 dag = 1 000 g · 1 dag = 10 g · 1 g = 1 000 mg';
+  return `<div class="stairs">${h}</div><div class="rule">${facts}</div>
+    <div class="rule">⬇ Ze <b>větší</b> jednotky na <b>menší</b> → <b>násobím</b> (číslo vyjde větší).<br>⬆ Z <b>menší</b> na <b>větší</b> → <b>dělím</b> (číslo vyjde menší).<br>Násobím/dělím 10, 100, 1 000 = posunu čárku o 1, 2, 3 místa.</div>`;
+}
+function openCheat(dk){
+  modal.innerHTML=`<div class="overlay" id="ov"><div class="sheet"><div class="top" style="margin:0"><h2>💡 Převodní schody</h2><button class="iconbtn" id="cl">Zavřít</button></div>
+    <div class="tabs"><button class="chip ${dk==='len'?'on':''}" data-d="len">📏 Délka</button><button class="chip ${dk==='mass'?'on':''}" data-d="mass">⚖️ Hmotnost</button></div>
+    ${stairsHTML(dk)}</div></div>`;
+  const close=()=>{modal.innerHTML='';const i=$('in0');if(i&&!S.answered)i.focus();};
+  $('cl').onclick=close;$('ov').onclick=e=>{if(e.target.id==='ov')close();};
+  modal.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>openCheat(b.dataset.d));
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&modal.innerHTML){modal.innerHTML='';return;}
+  if(e.key!=='Enter'||modal.innerHTML||!$('fb'))return;
+  if(S.answered){e.preventDefault();next();return;}
+  const q=S.qs[S.i];if(q&&q.kind==='input'){e.preventDefault();
+    const ins=q.ans.map((_,i)=>$('in'+i)),k=ins.indexOf(document.activeElement);
+    if(k>=0&&k<ins.length-1&&!ins[k+1].value){ins[k+1].focus();return;}checkInput();}
+});
+renderHome();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
